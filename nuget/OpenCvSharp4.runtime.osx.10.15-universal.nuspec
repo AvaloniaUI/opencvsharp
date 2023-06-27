@@ -25,7 +25,7 @@
         </frameworkAssemblies>
     </metadata>
     <files>
-        <file src="libOpenCvSharpExtern.dylib" target="runtimes/osx-x64/native" />
-        <file src="libOpenCvSharpExtern.dylib" target="runtimes/osx-arm64/native" />
+        <file src="intel/libOpenCvSharpExtern.dylib" target="runtimes/osx-x64/native" />
+        <file src="arm/libOpenCvSharpExtern.dylib" target="runtimes/osx-arm64/native" />
     </files>
 </package>
