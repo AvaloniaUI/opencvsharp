@@ -85,7 +85,7 @@ jobs:
       arch -arm64 make -j8
       ls 
       ls OpenCvSharpExtern
-      cp OpenCvSharpExtern/libOpenCvSharpExtern.dylib ${BUILD_SOURCESDIRECTORY}/nuget/arm
+      cp OpenCvSharpExtern/libOpenCvSharpExtern.dylib ${BUILD_SOURCESDIRECTORY}/nuget/arm/
     displayName: 'Build OpenCVSharpExtern'
 
   - script: |      
@@ -178,7 +178,7 @@ jobs:
       arch -x86_64 make -j8
       ls 
       ls OpenCvSharpExtern
-      cp OpenCvSharpExtern/libOpenCvSharpExtern.dylib ${BUILD_SOURCESDIRECTORY}/nuget/intel
+      cp OpenCvSharpExtern/libOpenCvSharpExtern.dylib ${BUILD_SOURCESDIRECTORY}/nuget/intel/
     displayName: 'Build OpenCVSharpExtern'
 
   - script: |      
