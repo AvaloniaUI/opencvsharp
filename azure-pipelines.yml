@@ -10,7 +10,7 @@ variables:
 trigger:
 - master
 stages:
--stage: build
+- stage: build
   jobs:
   - job: OsxArm
     pool:
@@ -200,7 +200,7 @@ stages:
         artifactName: 'BinariesIntel'
       condition: succeeded()
 
- -stage: pack
+ - stage: pack
   dependsOn: build
   jobs:
   - job: package
