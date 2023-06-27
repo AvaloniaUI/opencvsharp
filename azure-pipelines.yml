@@ -9,194 +9,222 @@ variables:
 
 trigger:
 - master
+stages:
+-stage: build
+  jobs:
+  - job: OsxArm
+    pool:
+      name: 'AvaloniaMacPool'
+      demands:
+      - arch -equals arm
 
-jobs:
-- job: OsxArm
-  pool:
-    name: 'AvaloniaMacPool'
-    demands:
-    - arch -equals arm
+    steps:
+    - script: arch -arm64 brew install wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp openexr
+      displayName: install build dependencies
 
-  steps:
-  - script: arch -arm64 brew install wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp openexr
-    displayName: install build dependencies
+    - script: |
+        pwd
+        arch -arm64 wget https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip -Oopencv-${OPENCV_VERSION}.zip && unzip opencv-${OPENCV_VERSION}.zip
+        arch -arm64 wget https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip -Oopencv_contrib-${OPENCV_VERSION}.zip && unzip opencv_contrib-${OPENCV_VERSION}.zip
+        cd opencv-${OPENCV_VERSION} && mkdir build && cd build
+        arch -arm64 cmake \
+          -DCMAKE_SYSTEM_PROCESSOR=arm64 \
+          -DWITH_OPENJPEG=OFF \
+          -DCMAKE_OSX_ARCHITECTURES="arm64" \
+          -DWITH_IPP=OFF \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-${OPENCV_VERSION}/modules \
+          -DBUILD_SHARED_LIBS=OFF \
+          -DENABLE_CXX11=ON -DBUILD_TESTS=OFF \
+          -DBUILD_PERF_TESTS=OFF \
+          -DBUILD_DOCS=OFF \
+          -DBUILD_EXAMPLES=OFF \
+          -DBUILD_JAVA=OFF \
+          -DBUILD_PNG=OFF \
+          -DWITH_PNG=OFF \
+          -DBUILD_opencv_java_bindings_generator=OFF \
+          -DBUILD_opencv_python_bindings_generator=OFF \
+          -DBUILD_opencv_python_tests=OFF \
+          -DBUILD_opencv_ts=OFF \
+          -DBUILD_opencv_js=OFF \
+          -DBUILD_opencv_js_bindings_generator=OFF \
+          -DBUILD_opencv_apps=OFF \
+          -DBUILD_opencv_barcode=OFF \
+          -DBUILD_opencv_bioinspired=OFF \
+          -DBUILD_opencv_ccalib=OFF \
+          -DBUILD_opencv_datasets=OFF \
+          -DBUILD_opencv_dnn_objdetect=OFF \
+          -DBUILD_opencv_dpm=OFF \
+          -DBUILD_opencv_fuzzy=OFF \
+          -DBUILD_opencv_gapi=ON \
+          -DBUILD_opencv_intensity_transform=OFF \
+          -DBUILD_opencv_mcc=OFF \
+          -DBUILD_opencv_objc_bindings_generator=OFF \
+          -DBUILD_opencv_rapid=OFF \
+          -DBUILD_opencv_reg=OFF \
+          -DBUILD_opencv_stereo=OFF \
+          -DBUILD_opencv_structured_light=OFF \
+          -DBUILD_opencv_surface_matching=OFF \
+          -DBUILD_opencv_wechat_qrcode=ON \
+          -DBUILD_opencv_videostab=OFF \
+          -DWITH_GSTREAMER=OFF \
+          -DWITH_EIGEN=OFF \
+          -DWITH_ADE=OFF \
+          -DWITH_OPENEXR=OFF \
+          -DOPENCV_ENABLE_NONFREE=ON \
+          -DCMAKE_INSTALL_PREFIX=${BUILD_SOURCESDIRECTORY}/opencv_macos ..
+        arch -arm64 make -j8
+        arch -arm64 make install
+        cd ${BUILD_SOURCESDIRECTORY}
+        ls
+      displayName: 'Build OpenCV'
 
-  - script: |
-      pwd
-      arch -arm64 wget https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip -Oopencv-${OPENCV_VERSION}.zip && unzip opencv-${OPENCV_VERSION}.zip
-      arch -arm64 wget https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip -Oopencv_contrib-${OPENCV_VERSION}.zip && unzip opencv_contrib-${OPENCV_VERSION}.zip
-      cd opencv-${OPENCV_VERSION} && mkdir build && cd build
-      arch -arm64 cmake \
-        -DCMAKE_SYSTEM_PROCESSOR=arm64 \
-        -DWITH_OPENJPEG=OFF \
-        -DCMAKE_OSX_ARCHITECTURES="arm64" \
-        -DWITH_IPP=OFF \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-${OPENCV_VERSION}/modules \
-        -DBUILD_SHARED_LIBS=OFF \
-        -DENABLE_CXX11=ON -DBUILD_TESTS=OFF \
-        -DBUILD_PERF_TESTS=OFF \
-        -DBUILD_DOCS=OFF \
-        -DBUILD_EXAMPLES=OFF \
-        -DBUILD_JAVA=OFF \
-        -DBUILD_PNG=OFF \
-        -DWITH_PNG=OFF \
-        -DBUILD_opencv_java_bindings_generator=OFF \
-        -DBUILD_opencv_python_bindings_generator=OFF \
-        -DBUILD_opencv_python_tests=OFF \
-        -DBUILD_opencv_ts=OFF \
-        -DBUILD_opencv_js=OFF \
-        -DBUILD_opencv_js_bindings_generator=OFF \
-        -DBUILD_opencv_apps=OFF \
-        -DBUILD_opencv_barcode=OFF \
-        -DBUILD_opencv_bioinspired=OFF \
-        -DBUILD_opencv_ccalib=OFF \
-        -DBUILD_opencv_datasets=OFF \
-        -DBUILD_opencv_dnn_objdetect=OFF \
-        -DBUILD_opencv_dpm=OFF \
-        -DBUILD_opencv_fuzzy=OFF \
-        -DBUILD_opencv_gapi=ON \
-        -DBUILD_opencv_intensity_transform=OFF \
-        -DBUILD_opencv_mcc=OFF \
-        -DBUILD_opencv_objc_bindings_generator=OFF \
-        -DBUILD_opencv_rapid=OFF \
-        -DBUILD_opencv_reg=OFF \
-        -DBUILD_opencv_stereo=OFF \
-        -DBUILD_opencv_structured_light=OFF \
-        -DBUILD_opencv_surface_matching=OFF \
-        -DBUILD_opencv_wechat_qrcode=ON \
-        -DBUILD_opencv_videostab=OFF \
-        -DWITH_GSTREAMER=OFF \
-        -DWITH_EIGEN=OFF \
-        -DWITH_ADE=OFF \
-        -DWITH_OPENEXR=OFF \
-        -DOPENCV_ENABLE_NONFREE=ON \
-        -DCMAKE_INSTALL_PREFIX=${BUILD_SOURCESDIRECTORY}/opencv_macos ..
-      arch -arm64 make -j8
-      arch -arm64 make install
-      cd ${BUILD_SOURCESDIRECTORY}
-      ls
-    displayName: 'Build OpenCV'
+    - script: |
+        pwd
+        mkdir src/build && cd $_
+        arch -arm64 cmake -DCMAKE_OSX_ARCHITECTURES="arm64" -DCMAKE_SYSTEM_PROCESSOR=arm64 -DWITH_OPENJPEG=OFF -DWITH_PNG=OFF -DCMAKE_BUILD_TYPE=Release -DWITH_IPP=OFF -D CMAKE_PREFIX_PATH=${BUILD_SOURCESDIRECTORY}/opencv_macos ..
+        arch -arm64 make -j8
+        ls 
+        ls OpenCvSharpExtern
+        mkdir ${BUILD_SOURCESDIRECTORY}/nuget/arm/
+        cp OpenCvSharpExtern/libOpenCvSharpExtern.dylib ${BUILD_SOURCESDIRECTORY}/nuget/arm/
+      displayName: 'Build OpenCVSharpExtern'
 
-  - script: |
-      pwd
-      mkdir src/build && cd $_
-      arch -arm64 cmake -DCMAKE_OSX_ARCHITECTURES="arm64" -DCMAKE_SYSTEM_PROCESSOR=arm64 -DWITH_OPENJPEG=OFF -DWITH_PNG=OFF -DCMAKE_BUILD_TYPE=Release -DWITH_IPP=OFF -D CMAKE_PREFIX_PATH=${BUILD_SOURCESDIRECTORY}/opencv_macos ..
-      arch -arm64 make -j8
-      ls 
-      ls OpenCvSharpExtern
-      mkdir ${BUILD_SOURCESDIRECTORY}/nuget/arm/
-      cp OpenCvSharpExtern/libOpenCvSharpExtern.dylib ${BUILD_SOURCESDIRECTORY}/nuget/arm/
-    displayName: 'Build OpenCVSharpExtern'
+    - script: |      
+        cd ${BUILD_SOURCESDIRECTORY}/nuget/
+        arch -arm64 tool -L libOpenCvSharpExtern.dylib
+        nm libOpenCvSharpExtern.dylib
+        echo -ne "#include <stdio.h> \n int core_Mat_sizeof(); int main(){ int i = core_Mat_sizeof(); printf(\"sizeof(Mat) = %d\", i); return 0; }" > test.c
+        arch -arm64 gcc -I./ -L./ test.c -o test -lOpenCvSharpExtern 
+        LD_LIBRARY_PATH=. arch -arm64 ./test
+      displayName: 'Check OpenCVSharpExtern'
+      continueOnError: true
 
-  - script: |      
-      cd ${BUILD_SOURCESDIRECTORY}/nuget/
-      arch -arm64 tool -L libOpenCvSharpExtern.dylib
-      nm libOpenCvSharpExtern.dylib
-      echo -ne "#include <stdio.h> \n int core_Mat_sizeof(); int main(){ int i = core_Mat_sizeof(); printf(\"sizeof(Mat) = %d\", i); return 0; }" > test.c
-      arch -arm64 gcc -I./ -L./ test.c -o test -lOpenCvSharpExtern 
-      LD_LIBRARY_PATH=. arch -arm64 ./test
-    displayName: 'Check OpenCVSharpExtern'
-    continueOnError: true
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathToPublish: '$(Build.SourcesDirectory)/nuget'
+        artifactName: 'BinariesArm'
+      condition: succeeded()
 
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathToPublish: '$(Build.SourcesDirectory)/nuget'
-      artifactName: 'BinariesArm'
-    condition: succeeded()
+  - job: OsxIntel
+    pool:
+      name: 'AvaloniaMacPool'
+      demands:
+      - arch -equals intel
 
-- job: OsxIntel
-  pool:
-    name: 'AvaloniaMacPool'
-    demands:
-    - arch -equals intel
+    steps:
+    - script: arch -x86_64 brew install wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp openexr
+      displayName: install build dependencies
 
-  steps:
-  - script: arch -x86_64 brew install wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp openexr
-    displayName: install build dependencies
+    - script: |
+        pwd
+        arch -x86_64 wget https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip -Oopencv-${OPENCV_VERSION}.zip && unzip opencv-${OPENCV_VERSION}.zip
+        arch -x86_64 wget https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip -Oopencv_contrib-${OPENCV_VERSION}.zip && unzip opencv_contrib-${OPENCV_VERSION}.zip
+        cd opencv-${OPENCV_VERSION} && mkdir build && cd build
+        arch -x86_64 cmake \
+          -DCMAKE_SYSTEM_PROCESSOR=x86_64 \
+          -DWITH_OPENJPEG=OFF \
+          -DCMAKE_OSX_ARCHITECTURES="x86_64" \
+          -DWITH_IPP=OFF \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-${OPENCV_VERSION}/modules \
+          -DBUILD_SHARED_LIBS=OFF \
+          -DENABLE_CXX11=ON -DBUILD_TESTS=OFF \
+          -DBUILD_PERF_TESTS=OFF \
+          -DBUILD_DOCS=OFF \
+          -DBUILD_EXAMPLES=OFF \
+          -DBUILD_JAVA=OFF \
+          -DBUILD_PNG=OFF \
+          -DWITH_PNG=OFF \
+          -DBUILD_opencv_java_bindings_generator=OFF \
+          -DBUILD_opencv_python_bindings_generator=OFF \
+          -DBUILD_opencv_python_tests=OFF \
+          -DBUILD_opencv_ts=OFF \
+          -DBUILD_opencv_js=OFF \
+          -DBUILD_opencv_js_bindings_generator=OFF \
+          -DBUILD_opencv_apps=OFF \
+          -DBUILD_opencv_barcode=OFF \
+          -DBUILD_opencv_bioinspired=OFF \
+          -DBUILD_opencv_ccalib=OFF \
+          -DBUILD_opencv_datasets=OFF \
+          -DBUILD_opencv_dnn_objdetect=OFF \
+          -DBUILD_opencv_dpm=OFF \
+          -DBUILD_opencv_fuzzy=OFF \
+          -DBUILD_opencv_gapi=ON \
+          -DBUILD_opencv_intensity_transform=OFF \
+          -DBUILD_opencv_mcc=OFF \
+          -DBUILD_opencv_objc_bindings_generator=OFF \
+          -DBUILD_opencv_rapid=OFF \
+          -DBUILD_opencv_reg=OFF \
+          -DBUILD_opencv_stereo=OFF \
+          -DBUILD_opencv_structured_light=OFF \
+          -DBUILD_opencv_surface_matching=OFF \
+          -DBUILD_opencv_wechat_qrcode=ON \
+          -DBUILD_opencv_videostab=OFF \
+          -DWITH_GSTREAMER=OFF \
+          -DWITH_EIGEN=OFF \
+          -DWITH_ADE=OFF \
+          -DWITH_OPENEXR=OFF \
+          -DOPENCV_ENABLE_NONFREE=ON \
+          -DCMAKE_INSTALL_PREFIX=${BUILD_SOURCESDIRECTORY}/opencv_macos ..
+        arch -x86_64 make -j8
+        arch -x86_64 make install
+        cd ${BUILD_SOURCESDIRECTORY}
+        ls
+      displayName: 'Build OpenCV'
 
-  - script: |
-      pwd
-      arch -x86_64 wget https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip -Oopencv-${OPENCV_VERSION}.zip && unzip opencv-${OPENCV_VERSION}.zip
-      arch -x86_64 wget https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip -Oopencv_contrib-${OPENCV_VERSION}.zip && unzip opencv_contrib-${OPENCV_VERSION}.zip
-      cd opencv-${OPENCV_VERSION} && mkdir build && cd build
-      arch -x86_64 cmake \
-        -DCMAKE_SYSTEM_PROCESSOR=x86_64 \
-        -DWITH_OPENJPEG=OFF \
-        -DCMAKE_OSX_ARCHITECTURES="x86_64" \
-        -DWITH_IPP=OFF \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-${OPENCV_VERSION}/modules \
-        -DBUILD_SHARED_LIBS=OFF \
-        -DENABLE_CXX11=ON -DBUILD_TESTS=OFF \
-        -DBUILD_PERF_TESTS=OFF \
-        -DBUILD_DOCS=OFF \
-        -DBUILD_EXAMPLES=OFF \
-        -DBUILD_JAVA=OFF \
-        -DBUILD_PNG=OFF \
-        -DWITH_PNG=OFF \
-        -DBUILD_opencv_java_bindings_generator=OFF \
-        -DBUILD_opencv_python_bindings_generator=OFF \
-        -DBUILD_opencv_python_tests=OFF \
-        -DBUILD_opencv_ts=OFF \
-        -DBUILD_opencv_js=OFF \
-        -DBUILD_opencv_js_bindings_generator=OFF \
-        -DBUILD_opencv_apps=OFF \
-        -DBUILD_opencv_barcode=OFF \
-        -DBUILD_opencv_bioinspired=OFF \
-        -DBUILD_opencv_ccalib=OFF \
-        -DBUILD_opencv_datasets=OFF \
-        -DBUILD_opencv_dnn_objdetect=OFF \
-        -DBUILD_opencv_dpm=OFF \
-        -DBUILD_opencv_fuzzy=OFF \
-        -DBUILD_opencv_gapi=ON \
-        -DBUILD_opencv_intensity_transform=OFF \
-        -DBUILD_opencv_mcc=OFF \
-        -DBUILD_opencv_objc_bindings_generator=OFF \
-        -DBUILD_opencv_rapid=OFF \
-        -DBUILD_opencv_reg=OFF \
-        -DBUILD_opencv_stereo=OFF \
-        -DBUILD_opencv_structured_light=OFF \
-        -DBUILD_opencv_surface_matching=OFF \
-        -DBUILD_opencv_wechat_qrcode=ON \
-        -DBUILD_opencv_videostab=OFF \
-        -DWITH_GSTREAMER=OFF \
-        -DWITH_EIGEN=OFF \
-        -DWITH_ADE=OFF \
-        -DWITH_OPENEXR=OFF \
-        -DOPENCV_ENABLE_NONFREE=ON \
-        -DCMAKE_INSTALL_PREFIX=${BUILD_SOURCESDIRECTORY}/opencv_macos ..
-      arch -x86_64 make -j8
-      arch -x86_64 make install
-      cd ${BUILD_SOURCESDIRECTORY}
-      ls
-    displayName: 'Build OpenCV'
+    - script: |
+        pwd
+        mkdir src/build && cd $_
+        arch -x86_64 cmake -DCMAKE_OSX_ARCHITECTURES="x86_64" -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DWITH_OPENJPEG=OFF -DWITH_PNG=OFF -DCMAKE_BUILD_TYPE=Release -DWITH_IPP=OFF -D CMAKE_PREFIX_PATH=${BUILD_SOURCESDIRECTORY}/opencv_macos ..
+        arch -x86_64 make -j8
+        ls 
+        ls OpenCvSharpExtern
+        mkdir ${BUILD_SOURCESDIRECTORY}/nuget/intel/
+        cp OpenCvSharpExtern/libOpenCvSharpExtern.dylib ${BUILD_SOURCESDIRECTORY}/nuget/intel/
+      displayName: 'Build OpenCVSharpExtern'
 
-  - script: |
-      pwd
-      mkdir src/build && cd $_
-      arch -x86_64 cmake -DCMAKE_OSX_ARCHITECTURES="x86_64" -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DWITH_OPENJPEG=OFF -DWITH_PNG=OFF -DCMAKE_BUILD_TYPE=Release -DWITH_IPP=OFF -D CMAKE_PREFIX_PATH=${BUILD_SOURCESDIRECTORY}/opencv_macos ..
-      arch -x86_64 make -j8
-      ls 
-      ls OpenCvSharpExtern
-      mkdir ${BUILD_SOURCESDIRECTORY}/nuget/intel/
-      cp OpenCvSharpExtern/libOpenCvSharpExtern.dylib ${BUILD_SOURCESDIRECTORY}/nuget/intel/
-    displayName: 'Build OpenCVSharpExtern'
+    - script: |      
+        cd ${BUILD_SOURCESDIRECTORY}/nuget/
+        arch -x86_64 tool -L libOpenCvSharpExtern.dylib
+        nm libOpenCvSharpExtern.dylib
+        echo -ne "#include <stdio.h> \n int core_Mat_sizeof(); int main(){ int i = core_Mat_sizeof(); printf(\"sizeof(Mat) = %d\", i); return 0; }" > test.c
+        arch -x86_64 gcc -I./ -L./ test.c -o test -lOpenCvSharpExtern 
+        LD_LIBRARY_PATH=. arch -x86_64 ./test
+      displayName: 'Check OpenCVSharpExtern'
+      continueOnError: true
 
-  - script: |      
-      cd ${BUILD_SOURCESDIRECTORY}/nuget/
-      arch -x86_64 tool -L libOpenCvSharpExtern.dylib
-      nm libOpenCvSharpExtern.dylib
-      echo -ne "#include <stdio.h> \n int core_Mat_sizeof(); int main(){ int i = core_Mat_sizeof(); printf(\"sizeof(Mat) = %d\", i); return 0; }" > test.c
-      arch -x86_64 gcc -I./ -L./ test.c -o test -lOpenCvSharpExtern 
-      LD_LIBRARY_PATH=. arch -x86_64 ./test
-    displayName: 'Check OpenCVSharpExtern'
-    continueOnError: true
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathToPublish: '$(Build.SourcesDirectory)/nuget'
+        artifactName: 'BinariesIntel'
+      condition: succeeded()
 
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathToPublish: '$(Build.SourcesDirectory)/nuget'
-      artifactName: 'BinariesIntel'
-    condition: succeeded()
+ -stage: pack
+  dependsOn: build
+  jobs:
+  - job: package
+    pool: 
+      vmImage: 'ubuntu-latest'
+    steps:
+    - download: current
+      artifact: BinariesArm
+    - download: current
+      artifact: BinariesIntel
+    
+    - script: |
+      mkdir $(Pipeline.Workspace)/BinariesArm/intel/
+      cp $(Pipeline.Workspace)/BinariesIntel/intel/*.* $(Pipeline.Workspace)/BinariesArm/arm/
+      yyyymmdd=`date '+%Y%m%d'`
+      echo $yyyymmdd
+      sed -E -i=.bak "s/<version>[0-9]\.[0-9]{1,2}\.[0-9]{1,2}.[0-9]{8}(-beta[0-9]*)?<\/version>/<version>${OPENCV_VERSION}.${yyyymmdd}${BETA}<\/version>/" $(Pipeline.Workspace)/BinariesArm/OpenCvSharp4.runtime.osx.10.15-universal.nuspec
+      cat $(Pipeline.Workspace)/BinariesArm/OpenCvSharp4.runtime.osx.10.15-universal.nuspec
+      dotnet pack $(Pipeline.Workspace)/BinariesArm/OpenCvSharp4.runtime.osx.10.15-universal.csproj -o ${BUILD_SOURCESDIRECTORY}/artifacts_macos
+      ls ${BUILD_SOURCESDIRECTORY}/artifacts_macos    
+    displayName: Generate Nuget Package.
 
-  
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathToPublish: '$(Build.SourcesDirectory)/artifacts_macos'
+        artifactName: 'Binaries'
+      condition: succeeded()
