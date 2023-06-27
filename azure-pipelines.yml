@@ -11,7 +11,7 @@ trigger:
 - master
 
 jobs:
-- job: Osx-Arm64
+- job: OsxArm
   pool:
     name: 'AvaloniaMacPool'
 
@@ -102,7 +102,7 @@ jobs:
       artifactName: 'Binaries arm64'
     condition: succeeded()
 
-- job: Osx-x86_64
+- job: OsxIntel
   pool:
     name: 'AvaloniaMacPool'
 
