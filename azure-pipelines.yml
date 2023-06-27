@@ -227,5 +227,5 @@ stages:
     - task: PublishBuildArtifacts@1
       inputs:
         pathToPublish: '$(Build.SourcesDirectory)/artifacts_macos'
-        artifactName: 'Binaries'
+        artifactName: 'nuget'
       condition: succeeded()
