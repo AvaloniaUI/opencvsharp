@@ -179,7 +179,7 @@ jobs:
       arch -x86_64 make -j8
       ls 
       ls OpenCvSharpExtern
-      ${BUILD_SOURCESDIRECTORY}/nuget/intel/
+      mkdir ${BUILD_SOURCESDIRECTORY}/nuget/intel/
       cp OpenCvSharpExtern/libOpenCvSharpExtern.dylib ${BUILD_SOURCESDIRECTORY}/nuget/intel/
     displayName: 'Build OpenCVSharpExtern'
 
