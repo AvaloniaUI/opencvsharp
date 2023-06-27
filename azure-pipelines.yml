@@ -14,6 +14,8 @@ jobs:
 - job: OsxArm
   pool:
     name: 'AvaloniaMacPool'
+    demands:
+    - arch -equals arm
 
   steps:
   - script: arch -arm64 brew install wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp openexr
@@ -96,24 +98,17 @@ jobs:
     displayName: 'Check OpenCVSharpExtern'
     continueOnError: true
 
-  - script: |
-      yyyymmdd=`date '+%Y%m%d'`
-      echo $yyyymmdd
-      sed -E -i=.bak "s/<version>[0-9]\.[0-9]{1,2}\.[0-9]{1,2}.[0-9]{8}(-beta[0-9]*)?<\/version>/<version>${OPENCV_VERSION}.${yyyymmdd}${BETA}<\/version>/" ${BUILD_SOURCESDIRECTORY}/nuget/OpenCvSharp4.runtime.osx.10.15-universal.nuspec
-      cat ${BUILD_SOURCESDIRECTORY}/nuget/OpenCvSharp4.runtime.osx.10.15-universal.nuspec
-      dotnet pack ${BUILD_SOURCESDIRECTORY}/nuget/OpenCvSharp4.runtime.osx.10.15-universal.csproj -o ${BUILD_SOURCESDIRECTORY}/artifacts_macos
-      ls ${BUILD_SOURCESDIRECTORY}/artifacts_macos    
-    displayName: Generate Nuget Package.
-
   - task: PublishBuildArtifacts@1
     inputs:
-      pathToPublish: '$(Build.SourcesDirectory)/artifacts_macos'
-      artifactName: 'Binaries'
+      pathToPublish: '$(Build.SourcesDirectory)/nuget'
+      artifactName: 'BinariesArm'
     condition: succeeded()
 
 - job: OsxIntel
   pool:
     name: 'AvaloniaMacPool'
+    demands:
+    - arch -equals intel
 
   steps:
   - script: arch -x86_64 brew install wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp openexr
@@ -196,19 +191,10 @@ jobs:
     displayName: 'Check OpenCVSharpExtern'
     continueOnError: true
 
-  - script: |
-      yyyymmdd=`date '+%Y%m%d'`
-      echo $yyyymmdd
-      sed -E -i=.bak "s/<version>[0-9]\.[0-9]{1,2}\.[0-9]{1,2}.[0-9]{8}(-beta[0-9]*)?<\/version>/<version>${OPENCV_VERSION}.${yyyymmdd}${BETA}<\/version>/" ${BUILD_SOURCESDIRECTORY}/nuget/OpenCvSharp4.runtime.osx.10.15-universal.nuspec
-      cat ${BUILD_SOURCESDIRECTORY}/nuget/OpenCvSharp4.runtime.osx.10.15-universal.nuspec
-      dotnet pack ${BUILD_SOURCESDIRECTORY}/nuget/OpenCvSharp4.runtime.osx.10.15-universal.csproj -o ${BUILD_SOURCESDIRECTORY}/artifacts_macos
-      ls ${BUILD_SOURCESDIRECTORY}/artifacts_macos    
-    displayName: Generate Nuget Package.
-
   - task: PublishBuildArtifacts@1
     inputs:
-      pathToPublish: '$(Build.SourcesDirectory)/artifacts_macos'
-      artifactName: 'Binaries'
+      pathToPublish: '$(Build.SourcesDirectory)/nuget'
+      artifactName: 'BinariesIntel'
     condition: succeeded()
 
   
