@@ -220,8 +220,8 @@ stages:
         sed -E -i=.bak "s/<version>[0-9]\.[0-9]{1,2}\.[0-9]{1,2}.[0-9]{8}(-beta[0-9]*)?<\/version>/<version>${OPENCV_VERSION}.${yyyymmdd}${BETA}<\/version>/" $(Pipeline.Workspace)/BinariesArm/OpenCvSharp4.runtime.osx.10.15-universal.nuspec
         cat $(Pipeline.Workspace)/BinariesArm/OpenCvSharp4.runtime.osx.10.15-universal.nuspec
         dotnet pack $(Pipeline.Workspace)/BinariesArm/OpenCvSharp4.runtime.osx.10.15-universal.csproj -o ${BUILD_SOURCESDIRECTORY}/artifacts_macos
-        ls ${BUILD_SOURCESDIRECTORY}/artifacts_macos    
-    displayName: Generate Nuget Package.
+        ls ${BUILD_SOURCESDIRECTORY}/artifacts_macos
+      displayName: Generate Nuget Package.
 
     - task: PublishBuildArtifacts@1
       inputs:
