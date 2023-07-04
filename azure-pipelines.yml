@@ -27,7 +27,7 @@ stages:
         pwd
         wget https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip -Oopencv-${OPENCV_VERSION}.zip && unzip opencv-${OPENCV_VERSION}.zip
         wget https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip -Oopencv_contrib-${OPENCV_VERSION}.zip && unzip opencv_contrib-${OPENCV_VERSION}.zip
-        cd opencv-${} && mkdir build && cd build
+        cd opencv-${OPENCV_VERSION} && mkdir build && cd build
         cmake \
           -D CMAKE_BUILD_TYPE=Release \
           -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-${OPENCV_VERSION}/modules \
@@ -79,9 +79,9 @@ stages:
         mkdir src/build && cd $_
         cmake -D CMAKE_PREFIX_PATH=${BUILD_SOURCESDIRECTORY}/linuxintel ..
         make -j2
-        mkdir ${}/nuget/linuxintel/
+        mkdir ${BUILD_SOURCESDIRECTORY}/nuget/linuxintel/
         ls OpenCvSharpExtern
-        cp OpenCvSharpExtern/libOpenCvSharpExtern.so ${GITHUB_WORKSPACE}/nuget/linuxintel/
+        cp OpenCvSharpExtern/libOpenCvSharpExtern.so ${BUILD_SOURCESDIRECTORY}/nuget/linuxintel/
       displayName: 'Build OpenCVSharpExtern'
 
     - script: |
