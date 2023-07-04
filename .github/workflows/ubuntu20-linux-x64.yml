@@ -1,4 +1,4 @@
-name: macOS 10.15
+name: Ubuntu 20.04
 
 on:
   pull_request:
@@ -14,7 +14,7 @@ env:
 jobs:
   build:
 
-    runs-on: macos-12
+    runs-on: ubuntu-20.04
     
     steps:
       - uses: actions/checkout@v3
@@ -23,30 +23,17 @@ jobs:
       
       - name: Install build dependencies (x64)
         run: | 
-          brew install wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp # openexr
-
-      - name: Install build dependencies (arm64)
-        run: |
-          arch -arm64 /opt/homebrew/bin/brew install wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp # openexr
-
-#      - name: Cache OpenCV
-#        id: opencv-cache
-#        uses: actions/cache@v3
-#        with:
-#          path: ${{ github.workspace }}/opencv_macos/
-#          key: opencv-${{ env.OPENCV_VERSION }}-macos-rev1
+          sudo apt install wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp # openexr
 
       - name: Build OpenCV
-        if: steps.opencv-cache.outputs.cache-hit != 'true'
         run: |
           pwd
           wget https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip -Oopencv-${OPENCV_VERSION}.zip && unzip opencv-${OPENCV_VERSION}.zip
           wget https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip -Oopencv_contrib-${OPENCV_VERSION}.zip && unzip opencv_contrib-${OPENCV_VERSION}.zip
           cd opencv-${OPENCV_VERSION} && mkdir build && cd build
           cmake \
-            -DCMAKE_SYSTEM_PROCESSOR=arm64 \
+            -DCMAKE_SYSTEM_PROCESSOR=x64 \
             -DWITH_OPENJPEG=OFF \
-            -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
             -DWITH_IPP=OFF \
             -DCMAKE_BUILD_TYPE=Release \
             -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-${OPENCV_VERSION}/modules \
@@ -105,8 +92,8 @@ jobs:
       - name: Check OpenCvSharpExtern
         run: |
           cd ${GITHUB_WORKSPACE}/nuget/
-          otool -L libOpenCvSharpExtern.dylib
-          nm libOpenCvSharpExtern.dylib
+          otool -L libOpenCvSharpExtern.so
+          nm libOpenCvSharpExtern.so
           echo -ne "#include <stdio.h> \n int core_Mat_sizeof(); int main(){ int i = core_Mat_sizeof(); printf(\"sizeof(Mat) = %d\", i); return 0; }" > test.c
           gcc -I./ -L./ test.c -o test -lOpenCvSharpExtern
           LD_LIBRARY_PATH=. ./test
@@ -129,5 +116,5 @@ jobs:
        
       - uses: actions/upload-artifact@v3
         with:
-          name: artifacts_macos_10
+          name: artifacts_macos_
           path: artifacts_macos
