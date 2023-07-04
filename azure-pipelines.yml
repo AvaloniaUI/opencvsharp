@@ -12,6 +12,117 @@ trigger:
 stages:
 - stage: build
   jobs:
+
+  - job: LinuxIntel
+    pool:
+      vmImage: ubuntu-20.04
+
+    steps:
+    - script: |
+          sudo apt-get update -y 
+          sudo apt-get install -y  --no-install-recommends \
+            apt-transport-https \
+            software-properties-common \
+            ca-certificates \
+            g++ \
+            make \
+            cmake \
+            libtbb-dev \
+            libatlas-base-dev \
+            libgtk2.0-dev \
+            libavcodec-dev \
+            libavformat-dev \
+            libswscale-dev \
+            libdc1394-22-dev \
+            libxine2-dev \
+            libv4l-dev \
+            libtheora-dev \
+            libvorbis-dev \
+            libxvidcore-dev \
+            libopencore-amrnb-dev \
+            libopencore-amrwb-dev \
+            libavresample-dev \
+            x264 \
+            libtesseract-dev 
+      displayName: install build dependencies
+
+    - script: |
+          pwd
+          arch -arm64 wget https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip -Oopencv-${OPENCV_VERSION}.zip && unzip opencv-${OPENCV_VERSION}.zip
+          arch -arm64 wget https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip -Oopencv_contrib-${OPENCV_VERSION}.zip && unzip opencv_contrib-${OPENCV_VERSION}.zip
+          cd opencv-${} && mkdir build && cd build
+          cmake \
+            -D CMAKE_BUILD_TYPE=Release \
+            -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-${OPENCV_VERSION}/modules \
+            -D BUILD_SHARED_LIBS=OFF \
+            -D ENABLE_CXX11=ON \
+            -D BUILD_EXAMPLES=OFF \
+            -D BUILD_DOCS=OFF \
+            -D BUILD_PERF_TESTS=OFF \
+            -D BUILD_TESTS=OFF \
+            -D BUILD_JAVA=OFF \
+            -D BUILD_opencv_apps=OFF \
+            -D BUILD_opencv_barcode=OFF \
+            -D BUILD_opencv_java_bindings_generator=OFF \
+            -D BUILD_opencv_python_bindings_generator=OFF \
+            -D BUILD_opencv_python_tests=OFF \
+            -D BUILD_opencv_ts=OFF \
+            -D BUILD_opencv_js=OFF \
+            -D BUILD_opencv_js_bindings_generator=OFF \
+            -D BUILD_opencv_bioinspired=OFF \
+            -D BUILD_opencv_ccalib=OFF \
+            -D BUILD_opencv_datasets=OFF \
+            -D BUILD_opencv_dnn_objdetect=OFF \
+            -D BUILD_opencv_dpm=OFF \
+            -D BUILD_opencv_fuzzy=OFF \
+            -D BUILD_opencv_gapi=ON \
+            -D BUILD_opencv_intensity_transform=OFF \
+            -D BUILD_opencv_mcc=OFF \
+            -D BUILD_opencv_objc_bindings_generator=OFF \
+            -D BUILD_opencv_rapid=OFF \
+            -D BUILD_opencv_reg=OFF \
+            -D BUILD_opencv_stereo=OFF \
+            -D BUILD_opencv_structured_light=OFF \
+            -D BUILD_opencv_surface_matching=OFF \
+            -D BUILD_opencv_wechat_qrcode=ON \
+            -D BUILD_opencv_videostab=OFF \
+            -D WITH_GSTREAMER=OFF \
+            -D WITH_ADE=OFF \
+            -D OPENCV_ENABLE_NONFREE=ON \
+            -D CMAKE_INSTALL_PREFIX=${BUILD_SOURCESDIRECTORY}/opencv_linuxintel ..
+          make -j8
+          make install
+          sudo ldconfig
+          cd ${BUILD_SOURCESDIRECTORY}
+          ls
+          displayName: 'Build OpenCV'
+
+    - script: |
+        pwd
+        mkdir src/build && cd $_
+        cmake -D CMAKE_PREFIX_PATH=${BUILD_SOURCESDIRECTORY}/linuxintel ..
+        make -j2
+        mkdir ${}/nuget/linuxintel/
+        ls OpenCvSharpExtern
+        cp OpenCvSharpExtern/libOpenCvSharpExtern.so ${GITHUB_WORKSPACE}/nuget/linuxintel/
+      displayName: 'Build OpenCVSharpExtern'
+
+    - script: |
+        cd ${BUILD_SOURCESDIRECTORY}/opencvsharp/nuget/
+        ldd libOpenCvSharpExtern.so
+        nm libOpenCvSharpExtern.so
+        echo -ne "#include <stdio.h> \n int core_Mat_sizeof(); int main(){ int i = core_Mat_sizeof(); printf(\"sizeof(Mat) = %d\", i); return 0; }" > test.c
+        gcc -I./ -L./ test.c -o test -lOpenCvSharpExtern
+        LD_LIBRARY_PATH=. ./test
+      displayName: 'Check OpenCVSharpExtern'
+      continueOnError: true
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathToPublish: '$(Build.SourcesDirectory)/nuget'
+        artifactName: 'BinariesLinuxIntel'
+      condition: succeeded()
+  
   - job: OsxArm
     pool:
       name: 'AvaloniaMacPool'
