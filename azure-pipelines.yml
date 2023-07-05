@@ -77,7 +77,7 @@ stages:
     - script: |
         pwd
         mkdir src/build && cd $_
-        cmake -D CMAKE_PREFIX_PATH=${BUILD_SOURCESDIRECTORY}/linuxintel ..
+        cmake -D CMAKE_PREFIX_PATH=${BUILD_SOURCESDIRECTORY}/opencv_linuxintel ..
         make -j2
         mkdir ${BUILD_SOURCESDIRECTORY}/nuget/linuxintel/
         ls OpenCvSharpExtern
