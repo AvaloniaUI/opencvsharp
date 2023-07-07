@@ -96,6 +96,7 @@ stages:
         mv ./DylibRepack-arm ./DylibRepack
         mkdir ${BUILD_SOURCESDIRECTORY}/nuget/arm/repack
         ./DylibRepack repack -o ${BUILD_SOURCESDIRECTORY}/nuget/arm/repack ${BUILD_SOURCESDIRECTORY}/nuget/arm/libOpenCvSharpExtern.dylib /opt/homebrew/lib/libgdiplus.dylib
+        for f in ${BUILD_SOURCESDIRECTORY}/nuget/arm/repack/*; do codesign --remove-signature $f; codesign -s - $f; done;
       displayName: Repack Dylib Dependencies
 
     - script: |      
@@ -198,6 +199,7 @@ stages:
         mv ./DylibRepack-intel ./DylibRepack
         mkdir ${BUILD_SOURCESDIRECTORY}/nuget/intel/repack
         ./DylibRepack repack -o ${BUILD_SOURCESDIRECTORY}/nuget/intel/repack ${BUILD_SOURCESDIRECTORY}/nuget/intel/libOpenCvSharpExtern.dylib /usr/local/lib/libgdiplus.dylib
+        for f in ${BUILD_SOURCESDIRECTORY}/nuget/intel/repack/*; do codesign --remove-signature $f; codesign -s - $f; done;
       displayName: Repack Dylib Dependencies
 
     - script: |      
