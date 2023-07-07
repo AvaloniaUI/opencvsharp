@@ -197,7 +197,7 @@ stages:
         chmod +x ./DylibRepack-intel
         mv ./DylibRepack-intel ./DylibRepack
         mkdir ${BUILD_SOURCESDIRECTORY}/nuget/intel/repack
-        ./DylibRepack repack -o ${BUILD_SOURCESDIRECTORY}/nuget/intel/repack ${BUILD_SOURCESDIRECTORY}/nuget/intel/libOpenCvSharpExtern.dylib /opt/homebrew/lib/libgdiplus.dylib
+        ./DylibRepack repack -o ${BUILD_SOURCESDIRECTORY}/nuget/intel/repack ${BUILD_SOURCESDIRECTORY}/nuget/intel/libOpenCvSharpExtern.dylib /usr/local/lib/libgdiplus.dylib
       displayName: Repack Dylib Dependencies
 
     - script: |      
