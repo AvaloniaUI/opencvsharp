@@ -95,8 +95,9 @@ stages:
         wget --no-check-certificate https://github.com/kekekeks/DylibRepack/releases/download/v0.0.2/DylibRepack-arm
         chmod +x ./DylibRepack-arm
         mv ./DylibRepack-arm ./DylibRepack
-        ./DylibRepack repack -o ${BUILD_SOURCESDIRECTORY}/nuget/ ${BUILD_SOURCESDIRECTORY}/nuget/arm/libOpenCvSharpExtern.dylib /opt/homebrew/lib/libgdiplus.dylib
-        ./DylibRepack verify ${BUILD_SOURCESDIRECTORY}/nuget/libOpenCvSharpExtern.dylib
+        mkdir ${BUILD_SOURCESDIRECTORY}/nuget/arm/repack
+        ./DylibRepack repack -o ${BUILD_SOURCESDIRECTORY}/nuget/arm/repack ${BUILD_SOURCESDIRECTORY}/nuget/arm/libOpenCvSharpExtern.dylib /opt/homebrew/lib/libgdiplus.dylib
+    
       displayName: Repack Dylib Dependencies
 
     - script: |      
