@@ -90,14 +90,12 @@ stages:
         cp OpenCvSharpExtern/libOpenCvSharpExtern.dylib ${BUILD_SOURCESDIRECTORY}/nuget/arm/
       displayName: 'Build OpenCVSharpExtern'
 
-
     - script: |
         wget --no-check-certificate https://github.com/kekekeks/DylibRepack/releases/download/v0.0.2/DylibRepack-arm
         chmod +x ./DylibRepack-arm
         mv ./DylibRepack-arm ./DylibRepack
         mkdir ${BUILD_SOURCESDIRECTORY}/nuget/arm/repack
         ./DylibRepack repack -o ${BUILD_SOURCESDIRECTORY}/nuget/arm/repack ${BUILD_SOURCESDIRECTORY}/nuget/arm/libOpenCvSharpExtern.dylib /opt/homebrew/lib/libgdiplus.dylib
-    
       displayName: Repack Dylib Dependencies
 
     - script: |      
@@ -194,6 +192,14 @@ stages:
         cp OpenCvSharpExtern/libOpenCvSharpExtern.dylib ${BUILD_SOURCESDIRECTORY}/nuget/intel/
       displayName: 'Build OpenCVSharpExtern'
 
+    - script: |
+        wget --no-check-certificate https://github.com/kekekeks/DylibRepack/releases/download/v0.0.2/DylibRepack-intel
+        chmod +x ./DylibRepack-intel
+        mv ./DylibRepack-intel ./DylibRepack
+        mkdir ${BUILD_SOURCESDIRECTORY}/nuget/intel/repack
+        ./DylibRepack repack -o ${BUILD_SOURCESDIRECTORY}/nuget/intel/repack ${BUILD_SOURCESDIRECTORY}/nuget/intel/libOpenCvSharpExtern.dylib /opt/homebrew/lib/libgdiplus.dylib
+      displayName: Repack Dylib Dependencies
+
     - script: |      
         cd ${BUILD_SOURCESDIRECTORY}/nuget/
         arch -x86_64 tool -L libOpenCvSharpExtern.dylib
@@ -225,7 +231,8 @@ stages:
     - script: |
         mkdir ${BUILD_SOURCESDIRECTORY}/artifacts_macos
         mkdir $(Pipeline.Workspace)/BinariesArm/intel/
-        cp -r $(Pipeline.Workspace)/BinariesIntel/intel/* $(Pipeline.Workspace)/BinariesArm/intel/
+        mkdir $(Pipeline.Workspace)/BinariesArm/intel/repack
+        cp -r $(Pipeline.Workspace)/BinariesIntel/intel/repack/* $(Pipeline.Workspace)/BinariesArm/intel/repack
         yyyymmdd=`date '+%Y%m%d'`
         echo $yyyymmdd
         sed -E -i=.bak "s/<version>[0-9]\.[0-9]{1,2}\.[0-9]{1,2}.[0-9]{8}(-beta[0-9]*)?<\/version>/<version>${OPENCV_VERSION}.${yyyymmdd}${BETA}<\/version>/" $(Pipeline.Workspace)/BinariesArm/OpenCvSharp4.runtime.osx.10.15-universal.nuspec
