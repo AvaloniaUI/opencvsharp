@@ -18,7 +18,9 @@ stages:
       demands:
         - arch -equals arm
     steps:
-    - script: arch -arm64 brew reinstall wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp openexr openblas
+    - script: |
+        arch -arm64 brew install wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp openexr openblas
+        arch -arm64 brew link openexr
       displayName: install build dependencies
 
     - script: |
@@ -116,7 +118,9 @@ stages:
       - arch -equals intel
 
     steps:
-    - script: arch -x86_64 brew reinstall wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp openexr openblas
+    - script: |
+        arch -x86_64 brew install wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp openexr openblas
+        arch -x86_64 brew link openexr
       displayName: install build dependencies
 
     - script: |
