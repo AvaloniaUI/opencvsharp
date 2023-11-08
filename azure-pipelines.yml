@@ -20,8 +20,8 @@ stages:
     steps:
     - script: |
         arch -arm64 brew install wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp openexr openblas
-        arch -arm64 export CFLAGS=„-I/opt/homebrew/Cellar/openexr/3.2.1/include -std=c++11"
-        arch -arm64 export LDFLAGS=„-L/opt/homebrew/Cellar/openexr/3.2.1/lib"
+        export CFLAGS=„-I/opt/homebrew/Cellar/openexr/3.2.1/include -std=c++11"
+        export LDFLAGS=„-L/opt/homebrew/Cellar/openexr/3.2.1/lib"
       displayName: install build dependencies
 
     - script: |
@@ -121,8 +121,8 @@ stages:
     steps:
     - script: |
         arch -x86_64 brew install wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp openexr openblas
-        arch -x86_64 export CFLAGS=„-I/opt/homebrew/Cellar/openexr/3.2.1/include -std=c++11"
-        arch -x86_64 export LDFLAGS=„-L/opt/homebrew/Cellar/openexr/3.2.1/lib"
+        export CFLAGS=„-I/opt/homebrew/Cellar/openexr/3.2.1/include -std=c++11"
+        export LDFLAGS=„-L/opt/homebrew/Cellar/openexr/3.2.1/lib"
       displayName: install build dependencies
 
     - script: |
