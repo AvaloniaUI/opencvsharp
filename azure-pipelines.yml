@@ -14,9 +14,7 @@ stages:
   jobs:
   - job: OsxArm
     pool:
-      name: 'AvaloniaMacPool'
-      demands:
-      - arch -equals arm
+      vmImage: 'macos-12'
 
     steps:
     - script: arch -arm64 brew install wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp openexr
