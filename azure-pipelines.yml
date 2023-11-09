@@ -20,7 +20,6 @@ stages:
     steps:
     - script: |
         arch -arm64 brew install wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp openexr openblas
-        arch -arm64 ln -s /opt/homebrew/lib/* /usr/local/lib
       displayName: install build dependencies
 
     - script: |
@@ -92,7 +91,7 @@ stages:
         chmod +x ./DylibRepack-arm
         mv ./DylibRepack-arm ./DylibRepack
         mkdir ${BUILD_SOURCESDIRECTORY}/nuget/arm/repack
-        ./DylibRepack repack -o ${BUILD_SOURCESDIRECTORY}/nuget/arm/repack ${BUILD_SOURCESDIRECTORY}/nuget/arm/libOpenCvSharpExtern.dylib /opt/homebrew/lib/libgdiplus.dylib
+        ./DylibRepack repack -o ${BUILD_SOURCESDIRECTORY}/nuget/arm/repack ${BUILD_SOURCESDIRECTORY}/nuget/arm/libOpenCvSharpExtern.dylib /opt/homebrew/lib/libpng16.16.dylib /opt/homebrew/lib/libgdiplus.dylib 
         for f in ${BUILD_SOURCESDIRECTORY}/nuget/arm/repack/*; do codesign --remove-signature $f; codesign -s - $f; done;
       displayName: Repack Dylib Dependencies
 
