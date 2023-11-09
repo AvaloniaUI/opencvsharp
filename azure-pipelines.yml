@@ -20,8 +20,6 @@ stages:
     steps:
     - script: |
         arch -arm64 brew install wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp openexr openblas
-        export CFLAGS="-I/opt/homebrew/Cellar/openexr/3.2.1/include -std=c++11"
-        export LDFLAGS="-L/opt/homebrew/Cellar/openexr/3.2.1/lib"
       displayName: install build dependencies
 
     - script: |
@@ -34,6 +32,7 @@ stages:
           -D CMAKE_OSX_ARCHITECTURES="arm64" \
           -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules \
           -D CMAKE_BUILD_TYPE=RELEASE \
+          -D WITH_OPENEXR=OFF  \
           -D BUILD_SHARED_LIBS=OFF \
           -D ENABLE_CXX11=ON \
           -D BUILD_EXAMPLES=OFF \
@@ -121,8 +120,6 @@ stages:
     steps:
     - script: |
         arch -x86_64 brew install wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp openexr openblas
-        export CFLAGS="-I/opt/homebrew/Cellar/openexr/3.2.1/include -std=c++11"
-        export LDFLAGS="-L/opt/homebrew/Cellar/openexr/3.2.1/lib"
       displayName: install build dependencies
 
     - script: |
@@ -136,6 +133,7 @@ stages:
           -D CMAKE_BUILD_TYPE=Release \
           -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules \
           -D BUILD_SHARED_LIBS=OFF \
+          -D WITH_OPENEXR=OFF \
           -D ENABLE_CXX11=ON \
           -D BUILD_EXAMPLES=OFF \
           -D BUILD_DOCS=OFF \
