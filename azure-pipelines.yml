@@ -33,6 +33,10 @@ stages:
           -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules \
           -D CMAKE_BUILD_TYPE=RELEASE \
           -D WITH_OPENEXR=OFF  \
+          -D WITH_OPENJPEG=OFF  \
+          -D WITH_IPP=OFF  \
+          -D BUILD_PNG=OFF  \
+          -D WITH_PNG=OFF  \
           -D BUILD_SHARED_LIBS=OFF \
           -D ENABLE_CXX11=ON \
           -D BUILD_EXAMPLES=OFF \
@@ -91,7 +95,7 @@ stages:
         chmod +x ./DylibRepack-arm
         mv ./DylibRepack-arm ./DylibRepack
         mkdir ${BUILD_SOURCESDIRECTORY}/nuget/arm/repack
-        ./DylibRepack repack -o ${BUILD_SOURCESDIRECTORY}/nuget/arm/repack ${BUILD_SOURCESDIRECTORY}/nuget/arm/libOpenCvSharpExtern.dylib /opt/homebrew/lib/libpng16.16.dylib /opt/homebrew/lib/libgdiplus.dylib 
+        ./DylibRepack repack -o ${BUILD_SOURCESDIRECTORY}/nuget/arm/repack ${BUILD_SOURCESDIRECTORY}/nuget/arm/libOpenCvSharpExtern.dylib /opt/homebrew/lib/libgdiplus.dylib 
         for f in ${BUILD_SOURCESDIRECTORY}/nuget/arm/repack/*; do codesign --remove-signature $f; codesign -s - $f; done;
       displayName: Repack Dylib Dependencies
 
@@ -133,7 +137,11 @@ stages:
           -D CMAKE_BUILD_TYPE=Release \
           -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules \
           -D BUILD_SHARED_LIBS=OFF \
-          -D WITH_OPENEXR=OFF \
+          -D WITH_OPENEXR=OFF  \
+          -D WITH_OPENJPEG=OFF  \
+          -D WITH_IPP=OFF  \
+          -D BUILD_PNG=OFF  \
+          -D WITH_PNG=OFF  \
           -D ENABLE_CXX11=ON \
           -D BUILD_EXAMPLES=OFF \
           -D BUILD_DOCS=OFF \
