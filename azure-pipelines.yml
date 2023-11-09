@@ -82,7 +82,14 @@ stages:
     - script: |
         pwd
         mkdir src/build && cd $_
-        arch -arm64 cmake -DCMAKE_OSX_ARCHITECTURES="arm64" -DCMAKE_SYSTEM_PROCESSOR=arm64 -DCMAKE_BUILD_TYPE=Release -D CMAKE_PREFIX_PATH=${BUILD_SOURCESDIRECTORY}/opencv_macos ..
+        arch -arm64 cmake \
+        -D CMAKE_OSX_ARCHITECTURES="arm64" \
+        -D CMAKE_SYSTEM_PROCESSOR=arm64 \
+        -D CMAKE_BUILD_TYPE=Release \
+        -D WITH_OPENJPEG=OFF  \
+        -D WITH_IPP=OFF  \
+        -D WITH_PNG=OFF  \
+        -D CMAKE_PREFIX_PATH=${BUILD_SOURCESDIRECTORY}/opencv_macos ..
         arch -arm64 make -j8
         ls 
         ls OpenCvSharpExtern
@@ -186,7 +193,14 @@ stages:
     - script: |
         pwd
         mkdir src/build && cd $_
-        arch -x86_64 cmake -DCMAKE_OSX_ARCHITECTURES="x86_64" -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_BUILD_TYPE=Release -D CMAKE_PREFIX_PATH=${BUILD_SOURCESDIRECTORY}/opencv_macos ..
+        arch -x86_64 cmake  \
+        -D CMAKE_OSX_ARCHITECTURES="x86_64"  \
+        -D CMAKE_SYSTEM_PROCESSOR=x86_64  \
+        -D CMAKE_BUILD_TYPE=Release  \
+        -D WITH_OPENJPEG=OFF  \
+        -D WITH_IPP=OFF  \
+        -D WITH_PNG=OFF  \
+        -D CMAKE_PREFIX_PATH=${BUILD_SOURCESDIRECTORY}/opencv_macos ..
         arch -x86_64 make -j8
         ls 
         ls OpenCvSharpExtern
