@@ -36,7 +36,7 @@ stages:
           -D WITH_OPENEXR=ON \
           -D BUILD_OPENEXR=ON \
           -D WITH_OPENJPEG=ON \
-          -D BUILD_OPENJPEG=ON \    
+          -D BUILD_OPENJPEG=ON \
           -D WITH_PNG=ON \
           -D BUILD_PNG=ON \
           -D ENABLE_CXX11=ON \
@@ -145,7 +145,7 @@ stages:
           -D WITH_OPENEXR=ON \
           -D BUILD_OPENEXR=ON \
           -D WITH_OPENJPEG=ON \
-          -D BUILD_OPENJPEG=ON \    
+          -D BUILD_OPENJPEG=ON \
           -D WITH_PNG=ON \
           -D BUILD_PNG=ON \
           -D ENABLE_CXX11=ON \
