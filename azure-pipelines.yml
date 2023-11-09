@@ -20,6 +20,7 @@ stages:
     steps:
     - script: |
         arch -arm64 brew install wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp openexr openblas
+        arch -arm64 ln -s /opt/homebrew/lib/* /usr/local/lib
       displayName: install build dependencies
 
     - script: |
