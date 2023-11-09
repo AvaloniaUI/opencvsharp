@@ -32,12 +32,13 @@ stages:
           -D CMAKE_OSX_ARCHITECTURES="arm64" \
           -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules \
           -D CMAKE_BUILD_TYPE=RELEASE \
-          -D WITH_OPENEXR=OFF  \
-          -D WITH_OPENJPEG=OFF  \
-          -D WITH_IPP=OFF  \
-          -D BUILD_PNG=OFF  \
-          -D WITH_PNG=OFF  \
           -D BUILD_SHARED_LIBS=OFF \
+          -D WITH_OPENEXR=ON  \
+          -D BUILD_OPENEXR=ON  \
+          -D WITH_OPENJPEG=ON  \
+          -D BUILD_OPENJPEG=ON  \    
+          -D WITH_PNG=ON  \
+          -D BUILD_PNG=ON  \
           -D ENABLE_CXX11=ON \
           -D BUILD_EXAMPLES=OFF \
           -D BUILD_DOCS=OFF \
@@ -86,9 +87,6 @@ stages:
         -D CMAKE_OSX_ARCHITECTURES="arm64" \
         -D CMAKE_SYSTEM_PROCESSOR=arm64 \
         -D CMAKE_BUILD_TYPE=Release \
-        -D WITH_OPENJPEG=OFF  \
-        -D WITH_IPP=OFF  \
-        -D WITH_PNG=OFF  \
         -D CMAKE_PREFIX_PATH=${BUILD_SOURCESDIRECTORY}/opencv_macos ..
         arch -arm64 make -j8
         ls 
@@ -144,11 +142,12 @@ stages:
           -D CMAKE_BUILD_TYPE=Release \
           -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules \
           -D BUILD_SHARED_LIBS=OFF \
-          -D WITH_OPENEXR=OFF  \
-          -D WITH_OPENJPEG=OFF  \
-          -D WITH_IPP=OFF  \
-          -D BUILD_PNG=OFF  \
-          -D WITH_PNG=OFF  \
+          -D WITH_OPENEXR=ON  \
+          -D BUILD_OPENEXR=ON  \
+          -D WITH_OPENJPEG=ON  \
+          -D BUILD_OPENJPEG=ON  \    
+          -D WITH_PNG=ON  \
+          -D BUILD_PNG=ON  \
           -D ENABLE_CXX11=ON \
           -D BUILD_EXAMPLES=OFF \
           -D BUILD_DOCS=OFF \
@@ -197,9 +196,6 @@ stages:
         -D CMAKE_OSX_ARCHITECTURES="x86_64"  \
         -D CMAKE_SYSTEM_PROCESSOR=x86_64  \
         -D CMAKE_BUILD_TYPE=Release  \
-        -D WITH_OPENJPEG=OFF  \
-        -D WITH_IPP=OFF  \
-        -D WITH_PNG=OFF  \
         -D CMAKE_PREFIX_PATH=${BUILD_SOURCESDIRECTORY}/opencv_macos ..
         arch -x86_64 make -j8
         ls 
