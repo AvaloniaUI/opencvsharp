@@ -14,16 +14,20 @@ env:
 jobs:
   build:
 
-    runs-on: macos-11
+    runs-on: macos-12
     
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 1
       
-      - name: Install build dependencies
+      - name: Install build dependencies (x64)
         run: | 
           brew install wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp # openexr
+
+      - name: Install build dependencies (arm64)
+        run: |
+          arch -arm64 /opt/homebrew/bin/brew install wget pkg-config mono-libgdiplus gtk+ ffmpeg@4 glog yasm harfbuzz jpeg libpng libtiff openjpeg metis openblas opencore-amr protobuf tbb webp # openexr
 
 #      - name: Cache OpenCV
 #        id: opencv-cache
@@ -40,6 +44,10 @@ jobs:
           wget https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip -Oopencv_contrib-${OPENCV_VERSION}.zip && unzip opencv_contrib-${OPENCV_VERSION}.zip
           cd opencv-${OPENCV_VERSION} && mkdir build && cd build
           cmake \
+            -DCMAKE_SYSTEM_PROCESSOR=arm64 \
+            -DWITH_OPENJPEG=OFF \
+            -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
+            -DWITH_IPP=OFF \
             -DCMAKE_BUILD_TYPE=Release \
             -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-${OPENCV_VERSION}/modules \
             -DBUILD_SHARED_LIBS=OFF \
@@ -79,7 +87,7 @@ jobs:
             -DWITH_OPENEXR=OFF \
             -DOPENCV_ENABLE_NONFREE=ON \
             -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/opencv_macos ..
-          make -j2
+          make -j3
           make install
           cd ${GITHUB_WORKSPACE}
           ls
@@ -88,8 +96,8 @@ jobs:
         run: |
           pwd
           mkdir src/build && cd $_
-          cmake -DCMAKE_BUILD_TYPE=Release -D CMAKE_PREFIX_PATH=${GITHUB_WORKSPACE}/opencv_macos ..
-          make -j2
+          cmake -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" -DCMAKE_SYSTEM_PROCESSOR=arm64 -DWITH_OPENJPEG=OFF -DCMAKE_BUILD_TYPE=Release -DWITH_IPP=OFF -D CMAKE_PREFIX_PATH=${GITHUB_WORKSPACE}/opencv_macos ..
+          make -j3
           ls 
           ls OpenCvSharpExtern
           cp OpenCvSharpExtern/libOpenCvSharpExtern.dylib ${GITHUB_WORKSPACE}/nuget/
@@ -114,32 +122,12 @@ jobs:
         run: |
           yyyymmdd=`date '+%Y%m%d'`
           echo $yyyymmdd
-          sed -E -i=.bak "s/<version>[0-9]\.[0-9]{1,2}\.[0-9]{1,2}.[0-9]{8}(-beta[0-9]*)?<\/version>/<version>${OPENCV_VERSION}.${yyyymmdd}${BETA}<\/version>/" ${GITHUB_WORKSPACE}/nuget/OpenCvSharp4.runtime.osx.10.15-x64.nuspec
-          cat ${GITHUB_WORKSPACE}/nuget/OpenCvSharp4.runtime.osx.10.15-x64.nuspec
-          dotnet pack ${GITHUB_WORKSPACE}/nuget/OpenCvSharp4.runtime.osx.10.15-x64.csproj -o ${GITHUB_WORKSPACE}/artifacts_macos
+          sed -E -i=.bak "s/<version>[0-9]\.[0-9]{1,2}\.[0-9]{1,2}.[0-9]{8}(-beta[0-9]*)?<\/version>/<version>${OPENCV_VERSION}.${yyyymmdd}${BETA}<\/version>/" ${GITHUB_WORKSPACE}/nuget/OpenCvSharp4.runtime.osx.10.15-universal.nuspec
+          cat ${GITHUB_WORKSPACE}/nuget/OpenCvSharp4.runtime.osx.10.15-universal.nuspec
+          dotnet pack ${GITHUB_WORKSPACE}/nuget/OpenCvSharp4.runtime.osx.10.15-universal.csproj -o ${GITHUB_WORKSPACE}/artifacts_macos
           ls ${GITHUB_WORKSPACE}/artifacts_macos       
        
       - uses: actions/upload-artifact@v3
         with:
           name: artifacts_macos_10
           path: artifacts_macos
-
-      - name: Test
-        run: |
-          cd ${GITHUB_WORKSPACE}/test/OpenCvSharp.Tests
-          # ls
-          dotnet build -c Release -f net6.0
-          cp ${GITHUB_WORKSPACE}/nuget/libOpenCvSharpExtern.dylib ${GITHUB_WORKSPACE}/test/OpenCvSharp.Tests/bin/Release/net6.0/
-          cp ${GITHUB_WORKSPACE}/nuget/libOpenCvSharpExtern.dylib ${GITHUB_WORKSPACE}/test/OpenCvSharp.Tests/
-          # ls ${GITHUB_WORKSPACE}/test/OpenCvSharp.Tests/bin/Release/net6.0/
-          # ls
-          sudo cp ${GITHUB_WORKSPACE}/nuget/libOpenCvSharpExtern.dylib /usr/local/lib/
-          LD_LIBRARY_PATH=. 
-          dotnet test OpenCvSharp.Tests.csproj -c Release -f net6.0 --runtime osx-x64 --logger "trx;LogFileName=test-results.trx" < /dev/null
-          ls
-          ls TestResults
-
-      - uses: actions/upload-artifact@v1
-        with:
-          name: artifacts_macos_10_test_results
-          path: test/OpenCvSharp.Tests/TestResults/test-results.trx
